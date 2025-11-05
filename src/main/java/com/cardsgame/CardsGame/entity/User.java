@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 @Entity
@@ -30,11 +31,17 @@ garantendo maggiore sicurezza dei dati sensibili.
     private String fName;
     private String lName;
 
+    @Column(nullable = false, unique = true)
     private String email;
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) //orphanRemoval elimina completamente l'entità associata alla classe padre, quando viene eliminata
+    @Builder.Default //Annotazione che permette di inizializzare i valori iniziali di default
+    private Set<UserAlbum> albums = new HashSet<>(); //Set è un'interfaccia che permette di avere una collezione unica, HashSet è la classe che la implementa
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
