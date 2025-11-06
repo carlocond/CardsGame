@@ -27,4 +27,8 @@ public class PackSlot {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pack_template_id")
     private PackTemplate packTemplate;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "expansion_id")
+    private Expansion expansion;
 }
