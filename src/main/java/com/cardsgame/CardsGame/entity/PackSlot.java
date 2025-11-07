@@ -28,7 +28,8 @@ public class PackSlot {
     @JoinColumn(name = "pack_template_id")
     private PackTemplate packTemplate;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    // Espansione associata allo slot (singola Expansion) — mapping corretto è ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "expansion_id")
     private Expansion expansion;
 }

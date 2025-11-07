@@ -46,7 +46,9 @@ garantendo maggiore sicurezza dei dati sensibili.
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        // Spring Security si aspetta che i ruoli usino il prefisso 'ROLE_'
+        // qui restituiamo quindi ad esempio 'ROLE_ADMIN' o 'ROLE_USER'
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override

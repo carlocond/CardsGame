@@ -3,13 +3,13 @@ package com.cardsgame.CardsGame;
 import com.cardsgame.CardsGame.entity.*;
 import com.cardsgame.CardsGame.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,9 +20,8 @@ public class DataLoader implements CommandLineRunner {
     CommandLineRunner è l'interfaccia che permette l'esecuzione al momento dell'avvio
      */
 
-    private static final Logger log = (Logger) LoggerFactory.getLogger(DataLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(DataLoader.class);
     //Il logger viene usato per stampare i messaggi nella console
-    //LoggerFactory è una classe che crea istanze di Logger
 
 
     //Connessione alle repository
@@ -47,11 +46,11 @@ public class DataLoader implements CommandLineRunner {
                 .fName("Admin")
                 .lName("Admin")
                 .email("admin@local.com")
-                .password("admin123")
+                .password(passwordEncoder.encode("admin123"))
                 .role(Role.ADMIN)
                 .build();
         userRepo.save(admin);
-        log.info("Dati utente inseriti correttamente.");
+        log.info("Utente admin inserito correttamente.");
 
         //Creazione di espansioni
         Expansion expansion1 = Expansion.builder()
@@ -89,6 +88,15 @@ public class DataLoader implements CommandLineRunner {
         createCard("Moltres", Rarity.ULTRA_RARE, expansion3, "url/moltres.png", "Leggendario ultra raro");
 
         log.info("Carte create correttamente.");
+
+        //Esempio di creazione di un pack template casuale
+        Map<Rarity, Integer> weights = new HashMap<>();
+        weights.put(Rarity.COMMON, 70);
+        weights.put(Rarity.UNCOMMON, 20);
+        weights.put(Rarity.RARE, 9);
+        weights.put(Rarity.ULTRA_RARE, 1);
+
+        createRandPackTemplate("Starter Pack 1", 10, weights);
     }
 
     //Metodo per creare e salvare le carte
@@ -143,7 +151,7 @@ public class DataLoader implements CommandLineRunner {
         Random rnd = new Random(); //Creazione di un generatore di numeri random
 
         //Creazione degli slot e salvataggio
-        for (int i = 0; i <= slotCount; i++){
+        for (int i = 0; i < slotCount; i++){
             //Rarità casuale in base al peso
             Rarity chosenRarity = weightedRarities.get(rnd.nextInt(weightedRarities.size()));
             //Espansione casuale
