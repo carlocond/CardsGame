@@ -13,7 +13,7 @@
   - Spring Web
   - Spring Security (JWT)
   - Spring Data JPA (Hibernate)
-- **MySQL** (o H2 per testing)
+- **PostgreSQL** (o H2 per testing)
 - **Maven** per il build
 - **Lombok** per boilerplate ridotto
 
@@ -124,11 +124,11 @@ password: admin123
 Nel file `src/main/resources/application.properties`:
 
 ```properties
-# === DATABASE ===
-spring.datasource.url=jdbc:mysql://localhost:3306/cardsdb
+# === DATABASE POSTGRESQL ===
+spring.datasource.url=jdbc:postgresql://localhost:5432/cardsdb
 spring.datasource.username=root
 spring.datasource.password=your_password
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.driver-class-name=org.postgresql.Driver
 
 # === JPA ===
 spring.jpa.hibernate.ddl-auto=update
