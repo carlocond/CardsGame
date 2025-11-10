@@ -30,19 +30,16 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Permettiamo l'accesso pubblico alle pagine statiche e alle risorse necessarie
                         .requestMatchers(
-                                "/",
-                                "/index.html",
-                                "/css/style.css",
-                                "/js/main.js",
+                                "/", "/index.html", "/admin.html",
                                 "/favicon.ico",
-                                "/images/**",
-                                "/css/**",
-                                "/js/**",
-                                "/api/v1/auth/**"
+                                "/css/**", "/js/**", "/images/**",
+                                "/api/v1/auth/**",
+                                "/api/cards/**",          // pubblici
+                                "/api/pack-templates/**", // pubblici
+                                "/api/expansions/**"      // pubblici (se li usi nei pack)
                         ).permitAll()
-                        // Tutte le altre richieste richiedono autenticazione
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

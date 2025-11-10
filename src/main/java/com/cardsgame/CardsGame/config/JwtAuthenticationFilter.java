@@ -37,6 +37,20 @@ OncePerRequestFilter è una classe che garantisce che un filtro venga eseguito u
         final String jwt;
         final String userEmail;
 
+        String path = request.getRequestURI();
+        if (path.startsWith("/api/v1/auth") ||
+                path.startsWith("/api/cards") ||
+                path.startsWith("/api/pack-templates") ||
+                path.startsWith("/css") ||
+                path.startsWith("/js") ||
+                path.startsWith("/images") ||
+                path.equals("/") ||
+                path.endsWith(".html") ||
+                path.endsWith(".ico")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")){
             filterChain.doFilter(request, response);
             return;

@@ -2,37 +2,36 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PokéCards Game</title>
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
 <body>
-
 <header class="app-header">
-    <div class="header-content">
-        <h1 class="logo">⚡ PokéCards Game ⚡</h1>
+    <div class="header-inner">
+        <div class="logo">⚡ PokéCards Game</div>
         <nav class="nav-bar">
             <button id="nav-home" class="nav-btn">Home</button>
             <button id="nav-packs" class="nav-btn">Pacchetti</button>
             <button id="nav-albums" class="nav-btn">Album</button>
-            <button id="nav-admin" class="nav-btn">Admin</button>
-            <span id="nav-user-label" class="user-label"></span>
-            <button id="nav-login" class="nav-btn nav-right">Login</button>
-            <button id="nav-logout" class="nav-btn nav-right" style="display:none;">Logout</button>
+            <button id="nav-admin" class="nav-btn nav-admin">Admin</button>
+            <span class="nav-spacer"></span>
+            <span id="nav-user-label" class="nav-user"></span>
+            <button id="nav-login" class="nav-btn nav-secondary">Login</button>
+            <button id="nav-logout" class="nav-btn nav-danger" style="display:none;">Logout</button>
         </nav>
     </div>
 </header>
 
-<main id="view" class="app-content">
-    <!-- il contenuto dinamico viene caricato qui da main.js -->
+<main id="view" class="app-main">
+    <!-- il contenuto dinamico viene inserito da main.js -->
 </main>
 
 <footer class="app-footer">
-    <p>Creato con ❤️ da <strong>PokéCards Dev</strong> | Powered by Spring Boot</p>
+    PokéCards &middot; Spring Boot @ 8081 &middot; Frontend statico vanilla JS
 </footer>
 
-<!-- Importa lo script solo alla fine del body -->
 <script src="/js/main.js"></script>
 </body>
 </html>
