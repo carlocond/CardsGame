@@ -34,11 +34,12 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/index.html",
-                                "/admin.html",
+                                "/css/style.css",
+                                "/js/main.js",
+                                "/favicon.ico",
+                                "/images/**",
                                 "/css/**",
                                 "/js/**",
-                                "/images/**",
-                                "/favicon.ico",
                                 "/api/v1/auth/**"
                         ).permitAll()
                         // Tutte le altre richieste richiedono autenticazione
