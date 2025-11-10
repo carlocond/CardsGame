@@ -18,8 +18,9 @@ import java.util.function.Function;
 public class JwtService {
     /*
       Chiave segreta usata per firmare i token JWT.
-      Nota: il codice usa Decoders.BASE64.decode(SECRET_KEY), quindi la stringa deve essere in Base64.
-      Se la chiave è in formato esadecimale o altro, la decodifica dovrà essere adattata.
+      Nota: la stringa fornita nel progetto era esadecimale (64 char -> 32 byte). In precedenza
+      il codice effettuava sempre una decode Base64, questo causava errori di decodifica.
+      Per essere robusti supportiamo sia Base64 che Hex.
      */
     private static final String SECRET_KEY = "f6052089d4d088770a507c2c889917ef51de88f93237ddc66b5a858f805a2cbb";
 
@@ -116,16 +117,31 @@ public class JwtService {
     }
 
     /*
-      Costruisce la chiave di firma a partire dalla stringa SECRET_KEY.
-      - Decodifica la stringa con Decoders.BASE64.decode
-      - Crea una Key HMAC-SHA utilizzabile da JJWT
-      Attenzione: se la `SECRET_KEY` non è realmente in Base64, la decodifica fallirà.
-      In molti esempi la chiave è fornita in Base64; se si possiede una chiave hex,
-      bisogna usare una decodifica differente (es. DatatypeConverter.parseHexBinary).
-      restituisce un oggetto Key per firmare o verificare JWT
+      Qui rendiamo la costruzione della chiave più tollerante: proviamo a decodificare come Base64
+      e se fallisce assumiamo che la stringa sia in esadecimale e la convertiamo in bytes.
+      Questo evita errori di decodifica se la chiave fornita non è in Base64.
      */
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes;
+        try {
+            // Proviamo prima Base64: se la stringa è Base64 questa linea funzionerà
+            keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        } catch (Exception e) {
+            // Se non è Base64, proviamo a decodificare come esadecimale (hex)
+            keyBytes = hexStringToByteArray(SECRET_KEY);
+        }
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    // Metodo helper per convertire una stringa hex in un array di byte
+    private static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            // parseInt legge due caratteri (1 byte) alla volta in base 16
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
     }
 }

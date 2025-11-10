@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,11 +22,13 @@ import java.io.IOException;
 @Component //Questa classe verrà trattata come un bean
 @RequiredArgsConstructor //Crea costruttori per ogni variabile final
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-/*
-OncePerRequestFilter è una classe che garantisce che un filtro venga eseguito una sola volta per ogni richiesta HTTP
- */
+    /*
+    OncePerRequestFilter è una classe che garantisce che un filtro venga eseguito una sola volta per ogni richiesta HTTP
+     */
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Override
     protected void doFilterInternal(
@@ -32,12 +36,17 @@ OncePerRequestFilter è una classe che garantisce che un filtro venga eseguito u
            @NonNull HttpServletResponse response,
            @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        //Check del token JWT
+        // Log base: path e metodo per vedere cosa arriva
+        String path = request.getRequestURI();
+        log.debug("JwtAuthFilter: request {} {}", request.getMethod(), path);
+
+        // Check del token JWT
         final String authHeader = request.getHeader("Authorization");
+        log.debug("JwtAuthFilter: Authorization header present: {}", (authHeader != null));
+
         final String jwt;
         final String userEmail;
 
-        String path = request.getRequestURI();
         if (path.startsWith("/api/v1/auth") ||
                 path.startsWith("/api/cards") ||
                 path.startsWith("/api/pack-templates") ||
@@ -46,12 +55,16 @@ OncePerRequestFilter è una classe che garantisce che un filtro venga eseguito u
                 path.startsWith("/images") ||
                 path.equals("/") ||
                 path.endsWith(".html") ||
-                path.endsWith(".ico")) {
+                path.endsWith(".ico") ||
+                path.startsWith("/api/debug")) {
+            // Queste rotte vengono trattate come pubbliche e quindi skip del parsing del token
+            log.debug("JwtAuthFilter: Public path - skipping authentication");
             filterChain.doFilter(request, response);
             return;
         }
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")){
+            log.debug("JwtAuthFilter: No Bearer token present - continuing filter chain");
             filterChain.doFilter(request, response);
             return;
         }
@@ -69,6 +82,7 @@ OncePerRequestFilter è una classe che garantisce che un filtro venga eseguito u
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                log.debug("JwtAuthFilter: Authentication set for user {}", userEmail);
             }
         }
         filterChain.doFilter(request, response);
