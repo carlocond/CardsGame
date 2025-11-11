@@ -56,7 +56,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 path.equals("/") ||
                 path.endsWith(".html") ||
                 path.endsWith(".ico") ||
-                path.startsWith("/api/debug")) {
+                path.startsWith("/api/debug") ||
+                path.equals("/error")) {
             // Queste rotte vengono trattate come pubbliche e quindi skip del parsing del token
             log.debug("JwtAuthFilter: Public path - skipping authentication");
             filterChain.doFilter(request, response);
@@ -69,10 +70,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         jwt = authHeader.substring(7); //La posizione 7 equivale allo spazio lasciato in "Bearer*"
-        userEmail = jwtService.extractUserEmail(jwt);
+        log.debug("JwtAuthFilter: raw token starts with: {}", jwt.length() > 20 ? jwt.substring(0, 20) + "..." : jwt);
+        try {
+            userEmail = jwtService.extractUserEmail(jwt);
+            log.debug("JwtAuthFilter: extracted userEmail from token: {}", userEmail);
+        } catch (Exception ex) {
+            log.warn("JwtAuthFilter: Failed to extract user email from token: {}", ex.getMessage());
+            filterChain.doFilter(request, response);
+            return;
+        }
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            if (jwtService.isTokenValid(jwt, userDetails)) {
+            boolean valid = jwtService.isTokenValid(jwt, userDetails);
+            log.debug("JwtAuthFilter: token valid status: {} for user {}", valid, userEmail);
+            if (valid) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

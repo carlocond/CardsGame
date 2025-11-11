@@ -61,8 +61,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authenticationProvider(authenticationProvider)
-                // Aggiungiamo il filtro JWT DOPO l'AnonymousAuthenticationFilter per evitare di interferire con le richieste anonime
-                .addFilterAfter(jwtAuthFilter, AnonymousAuthenticationFilter.class);
+                // Register the JWT filter BEFORE UsernamePasswordAuthenticationFilter so it runs early
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

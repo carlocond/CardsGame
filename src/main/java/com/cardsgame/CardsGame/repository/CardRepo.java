@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface CardRepo extends JpaRepository<Card, Long> {
 
     List<Card> findByExpansion(Expansion expansion);
+    List<Card> findByExpansionId(Long id);
     List<Card> findByRarity(Rarity rarity);
     Optional<Card> findByNameAndExpansion(String name, Expansion expansion);
 }
