@@ -114,9 +114,6 @@ password: admin123
 (Creato automaticamente dal `DataLoader` all’avvio)
 
 ---
-(Creato automaticamente dal `DataLoader` all’avvio)
-
----
 
 ## 🖥️ Come eseguire il progetto
 
